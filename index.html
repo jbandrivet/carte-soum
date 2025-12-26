@@ -1,193 +1,490 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Générateur d'Image Personnalisé</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(135deg,#1a1a1a 0%,#2d2d30 50%,#1a1a1a 100%);color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
-.container{background:rgba(44,44,44,0.95);backdrop-filter:blur(10px);border-radius:20px;box-shadow:0 15px 35px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.1);padding:30px 40px;max-width:650px;width:100%;border:1px solid rgba(255,0,0,0.3);position:relative;overflow:hidden;}
-.container::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#ff0000,transparent);}
-h1{text-align:center;margin-bottom:25px;font-size:2.5rem;background:linear-gradient(45deg,#ff0000,#cc0000);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 30px rgba(255,0,0,0.5);}
-.form-group{margin-bottom:20px;}
-label{display:block;margin-bottom:8px;font-weight:600;color:#e0e0e0;font-size:1.1rem;}
-input[type="file"],textarea,select,input[type="text"],input[type="tel"]{width:100%;padding:12px;border:2px solid rgba(255,0,0,0.3);border-radius:12px;background:rgba(51,51,51,0.8);color:#fff;font-size:1rem;transition:all 0.3s ease;}
-input:focus,textarea:focus,select:focus{outline:none;border-color:#ff0000;box-shadow:0 0 20px rgba(255,0,0,0.3);transform:translateY(-2px);}
-textarea{resize:vertical;min-height:80px;font-family:inherit;}
-.controls-row{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:20px;}
-.slider-group{display:flex;flex-direction:column;}
-input[type="range"]{width:100%;margin:10px 0;-webkit-appearance:none;appearance:none;height:6px;background:rgba(255,255,255,0.2);border-radius:3px;outline:none;}
-input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;background:#ff0000;border-radius:50%;cursor:pointer;box-shadow:0 0 10px rgba(255,0,0,0.5);}
-input[type="range"]::-moz-range-thumb{width:20px;height:20px;background:#ff0000;border-radius:50%;cursor:pointer;border:none;box-shadow:0 0 10px rgba(255,0,0,0.5);}
-.color-picker{display:flex;align-items:center;gap:10px;}
-input[type="color"]{width:50px;height:40px;border:none;border-radius:8px;cursor:pointer;background:none;}
-button{width:100%;background:linear-gradient(45deg,#ff0000,#cc0000);color:#fff;padding:16px;border:none;border-radius:12px;cursor:pointer;font-size:1.1rem;font-weight:bold;transition:all 0.3s ease;text-transform:uppercase;letter-spacing:1px;position:relative;overflow:hidden;margin-bottom:10px;}
-button::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transition:left 0.5s ease;}
-button:hover::before{left:100%;}
-button:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(255,0,0,0.4);}
-button:active{transform:translateY(-1px);}
-button:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
-.preview-container{margin-top:20px;text-align:center;}
-#preview{max-width:100%;max-height:500px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.5);border:2px solid rgba(255,0,0,0.5);display:none;}
-#downloadLink{display:none;margin-top:15px;padding:12px 20px;background:rgba(255,0,0,0.1);color:#ff0000;text-decoration:none;border-radius:8px;font-weight:bold;border:1px solid rgba(255,0,0,0.3);transition:all 0.3s ease;}
-#downloadLink:hover{background:rgba(255,0,0,0.2);transform:translateY(-2px);}
-.loading{display:none;text-align:center;margin-top:15px;}
-.spinner{border:3px solid rgba(255,255,255,0.3);border-radius:50%;border-top:3px solid #ff0000;width:40px;height:40px;animation:spin 1s linear infinite;margin:0 auto;}
-@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
-.value-display{font-size:0.9rem;color:#ff0000;font-weight:bold;}
-.photo-preview,.id-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;margin-top:10px;}
-.preview-img{position:relative;border-radius:8px;overflow:hidden;border:2px solid rgba(255,0,0,0.3);aspect-ratio:1;}
-.preview-img img{width:100%;height:100%;object-fit:cover;}
-.preview-img .remove-btn{position:absolute;top:5px;right:5px;background:rgba(255,0,0,0.9);color:#fff;border:none;border-radius:50%;width:25px;height:25px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;z-index:10;}
-.preview-img .remove-btn:hover{background:#ff0000;transform:scale(1.1);}
-.button-row{display:flex;gap:10px;margin-bottom:10px;}
-small{font-size:0.85rem;}
-@media (max-width:768px){.controls-row{grid-template-columns:1fr;}.container{padding:20px;margin:10px;}h1{font-size:2rem;}.button-row{flex-direction:column;}.button-row button{width:100%!important;}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitter Submission Generator - Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: #111;
+            border-radius: 24px;
+            box-shadow: 0 0 40px rgba(255, 0, 0, 0.2);
+            padding: 30px;
+            max-width: 850px;
+            width: 100%;
+            border: 1px solid #333;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+            color: #ff0000;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-section {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid #222;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: #888;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        input[type="text"], input[type="file"], textarea, select {
+            width: 100%;
+            padding: 12px;
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        input:focus { border-color: #ff0000; outline: none; }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn-generate {
+            background: #ff0000;
+            color: #fff;
+        }
+
+        .btn-generate:hover { background: #cc0000; transform: translateY(-2px); }
+
+        .btn-test {
+            background: #333;
+            color: #aaa;
+            border: 1px solid #444;
+        }
+
+        .btn-test:hover { background: #444; color: #fff; }
+
+        .sub-options {
+            display: none;
+            margin-top: 10px;
+            padding: 15px;
+            background: #000;
+            border-radius: 10px;
+            border: 1px dashed #444;
+        }
+
+        .sub-options.active { display: block; }
+
+        .preview-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        #canvasPreview {
+            max-width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(0,0,0,1);
+            display: none;
+            border: 1px solid #333;
+        }
+
+        .twitter-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .badge-opt {
+            padding: 6px 12px;
+            background: #222;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: 0.2s;
+        }
+
+        .badge-opt.selected {
+            background: #ff0000;
+            border-color: #fff;
+            color: #fff;
+        }
+
+        .loader {
+            display: none;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #333;
+            border-top-color: #ff0000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        #downloadLink {
+            display: none;
+            color: #ff0000;
+            font-weight: bold;
+            text-decoration: none;
+            margin-top: 15px;
+            padding: 10px 20px;
+            border: 1px solid #ff0000;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        #downloadLink:hover { background: rgba(255,0,0,0.1); }
+
+        @media (max-width: 768px) { 
+            .grid { grid-template-columns: 1fr; }
+            .button-group { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
+
 <div class="container">
-<h1>🎨 Générateur d'Image</h1>
-<form id="imageForm">
-<div class="form-group">
-<label for="photos">📸 Choisir jusqu'à 6 photos :</label>
-<input type="file" id="photos" accept="image/*" capture="environment" multiple required>
-<div id="photoPreview" class="photo-preview"></div>
+    <h1>Twitter Exposure Pro</h1>
+    
+    <form id="twForm">
+        <div class="grid">
+            <!-- Colonne Gauche -->
+            <div class="form-section">
+                <label>📸 IMAGE PRINCIPALE</label>
+                <input type="file" id="mainImg" accept="image/*">
+                
+                <label>🐦 VOTRE @ TWITTER</label>
+                <input type="text" id="twHandle" placeholder="@votre_pseudo">
+                
+                <label>✍️ MESSAGE D'EXPOSITION</label>
+                <textarea id="mainText" rows="3" placeholder="Ex: Officiellement soumis à @Maitre_X..."></textarea>
+                
+                <label>🏷️ HASHTAGS</label>
+                <div class="twitter-badges">
+                    <span class="badge-opt" data-tag="#soumis" onclick="toggleBadge(this)">#soumis</span>
+                    <span class="badge-opt" data-tag="#owned" onclick="toggleBadge(this)">#owned</span>
+                    <span class="badge-opt" data-tag="#exposure" onclick="toggleBadge(this)">#exposure</span>
+                    <span class="badge-opt" data-tag="#humiliation" onclick="toggleBadge(this)">#humiliation</span>
+                </div>
+            </div>
+
+            <!-- Colonne Droite -->
+            <div class="form-section">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <label style="margin:0">🆔 AJOUTER SCAN CNI (Optionnel)</label>
+                    <input type="checkbox" id="showCni" style="width:20px; height:20px; accent-color:#f00">
+                </div>
+                
+                <div id="cniContainer" class="sub-options">
+                    <input type="file" id="cniFile" accept="image/*">
+                    
+                    <label>Position :</label>
+                    <select id="cniPos">
+                        <option value="br">Bas Droite</option>
+                        <option value="bl">Bas Gauche</option>
+                        <option value="c">Centre</option>
+                    </select>
+                    
+                    <label>Taille :</label>
+                    <input type="range" id="cniSize" min="200" max="600" value="380">
+                    
+                    <label>Masquage Sécurité :</label>
+                    <select id="cniCensure">
+                        <option value="none">Aucun</option>
+                        <option value="black-bar">Bande Noire (Numéros)</option>
+                        <option value="pixel">Flou partiel</option>
+                    </select>
+                </div>
+
+                <label style="margin-top:15px">🎞️ STYLE VISUEL</label>
+                <select id="styleFiltre">
+                    <option value="none">Standard</option>
+                    <option value="dark">Contraste Brut (N&B)</option>
+                    <option value="red">Ambiance Rouge</option>
+                    <option value="industrial">Grain Argentique</option>
+                </select>
+
+                <label>COULEUR DU CADRE</label>
+                <input type="color" id="frameColor" value="#ff0000" style="height:40px; cursor:pointer;">
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-test" id="btnTest">🧪 Simulation / Test</button>
+            <button type="submit" class="btn btn-generate" id="btnGenerate">Générer le Rendu</button>
+        </div>
+    </form>
+
+    <div class="loader" id="loader"></div>
+
+    <div class="preview-container">
+        <canvas id="canvasPreview"></canvas>
+        <br>
+        <a id="downloadLink" href="#" download="exposure_twitter.jpg">TÉLÉCHARGER L'IMAGE FINALE</a>
+    </div>
 </div>
-<div class="form-group">
-<label for="idCard">🆔 Carte d'identité (facultatif) :</label>
-<input type="file" id="idCard" accept="image/*">
-<div id="idPreview" class="id-preview"></div>
-</div>
-<div class="form-group">
-<label>Position carte d'identité :</label>
-<select id="idPosition">
-<option value="bottom-right">En bas à droite</option>
-<option value="bottom-left">En bas à gauche</option>
-<option value="top-right">En haut à droite</option>
-<option value="top-left">En haut à gauche</option>
-<option value="center">Au centre</option>
-</select>
-</div>
-<div class="form-group">
-<label for="firstName">👤 Prénom :</label>
-<input type="text" id="firstName" placeholder="Votre prénom" required>
-</div>
-<div class="form-group">
-<label for="lastName">👤 Nom :</label>
-<input type="text" id="lastName" placeholder="Votre nom" required>
-</div>
-<div class="form-group">
-<label for="phone">📞 Numéro de téléphone :</label>
-<input type="tel" id="phone" placeholder="Ex: +33 6 12 34 56 78" pattern="[\+]?[0-9\s\-\(\)]+" required>
-<small style="color:#999;display:block;margin-top:5px;">Format: international recommandé</small>
-</div>
-<div class="form-group">
-<label for="social">📱 Profil réseau social :</label>
-<input type="text" id="social" placeholder="Ex: @monprofil">
-</div>
-<div class="form-group">
-<label for="info">✏️ Texte personnalisé :</label>
-<textarea id="info" placeholder="Entrez un message..."></textarea>
-</div>
-<div class="form-group">
-<label for="theme">🎨 Choisir un overlay :</label>
-<select id="theme">
-<option value="none">Aucun</option>
-<option value="chains">Chaînes métalliques</option>
-<option value="leather">Texture cuir</option>
-<option value="ropes">Cordes entrelacées</option>
-<option value="geometric">Motifs géométriques</option>
-<option value="smoke">Effet fumée</option>
-</select>
-</div>
-<div class="controls-row">
-<div class="slider-group">
-<label for="textSize">📏 Taille texte: <span id="textSizeValue" class="value-display">40px</span></label>
-<input type="range" id="textSize" min="20" max="80" value="40">
-</div>
-<div class="slider-group">
-<label for="overlayOpacity">🎭 Opacité: <span id="overlayOpacityValue" class="value-display">30%</span></label>
-<input type="range" id="overlayOpacity" min="10" max="80" value="30">
-</div>
-</div>
-<div class="controls-row">
-<div class="slider-group">
-<label for="imageQuality">⚡ Qualité: <span id="imageQualityValue" class="value-display">92%</span></label>
-<input type="range" id="imageQuality" min="60" max="100" value="92">
-</div>
-<div class="slider-group">
-<label for="borderWidth">📐 Bordure: <span id="borderWidthValue" class="value-display">8px</span></label>
-<input type="range" id="borderWidth" min="0" max="20" value="8">
-</div>
-</div>
-<div class="controls-row">
-<div class="color-picker">
-<label for="textColor">🎨 Couleur texte:</label>
-<input type="color" id="textColor" value="#ff0000">
-</div>
-<div class="color-picker">
-<label for="borderColor">🖼️ Couleur bordure:</label>
-<input type="color" id="borderColor" value="#ff0000">
-</div>
-</div>
-<div class="form-group">
-<label><input type="checkbox" id="livePreview" style="width:auto;margin-right:8px;">👁️ Prévisualisation temps réel</label>
-</div>
-<div class="form-group">
-<label for="outputSize">📱 Taille de sortie :</label>
-<select id="outputSize">
-<option value="1920x1080">Full HD (1920x1080)</option>
-<option value="1280x720">HD (1280x720)</option>
-<option value="3840x2160">4K (3840x2160)</option>
-<option value="1080x1920">Story Instagram (1080x1920)</option>
-<option value="1080x1080">Carré Instagram (1080x1080)</option>
-</select>
-</div>
-<button type="submit" id="generateBtn">🎨 Générer l'image</button>
-<div class="button-row">
-<button type="button" id="translateBtn" style="width:48%;">🌐 EN</button>
-<button type="button" id="resetBtn" style="width:48%;">🔄 Réinitialiser</button>
-</div>
-</form>
-<div class="loading" id="loading"><div class="spinner"></div><p>Génération en cours...</p></div>
-<div class="preview-container">
-<canvas id="previewCanvas" style="display:none;"></canvas>
-<img id="preview" src="" alt="Image générée"/>
-<br>
-<a id="downloadLink" href="#" download="image_personnalisee.jpg">⬇️ Télécharger l'image</a>
-</div>
-</div>
+
 <script>
-const sliders={textSize:{elem:document.getElementById('textSize'),display:document.getElementById('textSizeValue'),suffix:'px'},overlayOpacity:{elem:document.getElementById('overlayOpacity'),display:document.getElementById('overlayOpacityValue'),suffix:'%'},imageQuality:{elem:document.getElementById('imageQuality'),display:document.getElementById('imageQualityValue'),suffix:'%'},borderWidth:{elem:document.getElementById('borderWidth'),display:document.getElementById('borderWidthValue'),suffix:'px'}};
-Object.entries(sliders).forEach(([key,{elem,display,suffix}])=>{elem.addEventListener('input',()=>{display.textContent=elem.value+suffix;if(document.getElementById('livePreview').checked)generatePreview();});});
-let photosArray=[];
-const photosInput=document.getElementById('photos');
-const photoPreview=document.getElementById('photoPreview');
-photosInput.addEventListener('change',(e)=>{const files=Array.from(e.target.files).slice(0,6);photosArray=[];photoPreview.innerHTML='';files.forEach((file,index)=>{const reader=new FileReader();reader.onload=(ev)=>{const img=new Image();img.onload=()=>{photosArray.push(img);const div=document.createElement('div');div.className='preview-img';div.innerHTML=`<img src="${ev.target.result}" alt="Photo ${index+1}"><button class="remove-btn" onclick="removePhoto(${index})">×</button>`;photoPreview.appendChild(div);};img.src=ev.target.result;};reader.readAsDataURL(file);});});
-window.removePhoto=(index)=>{photosArray.splice(index,1);photoPreview.children[index].remove();};
-let idCardImage=null;
-const idCardInput=document.getElementById('idCard');
-const idPreview=document.getElementById('idPreview');
-idCardInput.addEventListener('change',(e)=>{const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=(ev)=>{const img=new Image();img.onload=()=>{idCardImage=img;idPreview.innerHTML=`<div class="preview-img"><img src="${ev.target.result}" alt="Carte ID"><button class="remove-btn" onclick="removeIdCard()">×</button></div>`;};img.src=ev.target.result;};reader.readAsDataURL(file);});
-window.removeIdCard=()=>{idCardImage=null;idPreview.innerHTML='';idCardInput.value='';};
-function drawOverlay(ctx,w,h,theme,opacity){if(theme==='none')return;ctx.globalAlpha=opacity/100;switch(theme){case 'chains':ctx.strokeStyle='rgba(150,150,150,0.7)';ctx.lineWidth=6;for(let i=0;i<10;i++){ctx.beginPath();ctx.arc(Math.random()*w,Math.random()*h,30,0,Math.PI*2);ctx.stroke();}break;case 'leather':ctx.fillStyle='rgba(100,50,30,0.3)';ctx.fillRect(0,0,w,h);for(let i=0;i<100;i++){ctx.fillStyle=`rgba(${80+Math.random()*40},${40+Math.random()*20},20,0.1)`;ctx.fillRect(Math.random()*w,Math.random()*h,Math.random()*50,Math.random()*50);}break;case 'ropes':ctx.strokeStyle='rgba(139,90,43,0.6)';ctx.lineWidth=8;for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(0,i*h/5);ctx.lineTo(w,i*h/5+50);ctx.stroke();}break;case 'geometric':ctx.strokeStyle='rgba(255,0,0,0.4)';ctx.lineWidth=3;const size=100;for(let x=0;x<w;x+=size){for(let y=0;y<h;y+=size){ctx.strokeRect(x,y,size,size);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+size,y+size);ctx.stroke();}}break;case 'smoke':const gradient=ctx.createRadialGradient(w/2,h/2,0,w/2,h/2,Math.max(w,h)/2);gradient.addColorStop(0,'rgba(80,80,80,0)');gradient.addColorStop(0.5,'rgba(60,60,60,0.3)');gradient.addColorStop(1,'rgba(40,40,40,0.5)');ctx.fillStyle=gradient;ctx.fillRect(0,0,w,h);break;}ctx.globalAlpha=1.0;}
-function wrapText(ctx,text,x,y,maxWidth,lineHeight){const lines=text.split('\n');let currentY=y;lines.forEach(line=>{if(!line.trim()){currentY+=lineHeight;return;}const words=line.split(' ');let currentLine='';words.forEach(word=>{const testLine=currentLine+word+' ';const metrics=ctx.measureText(testLine);if(metrics.width>maxWidth&&currentLine){ctx.strokeText(currentLine,x,currentY);ctx.fillText(currentLine,x,currentY);currentLine=word+' ';currentY+=lineHeight;}else{currentLine=testLine;}});ctx.strokeText(currentLine,x,currentY);ctx.fillText(currentLine,x,currentY);currentY+=lineHeight;});}
-function getIdCardPosition(w,h,idW,idH,position){const margin=20;const positions={'bottom-right':{x:w-idW-margin,y:h-idH-margin},'bottom-left':{x:margin,y:h-idH-margin},'top-right':{x:w-idW-margin,y:margin},'top-left':{x:margin,y:margin},'center':{x:(w-idW)/2,y:(h-idH)/2}};return positions[position]||positions['bottom-right'];}
-const form=document.getElementById('imageForm');
-const preview=document.getElementById('preview');
-const downloadLink=document.getElementById('downloadLink');
-const loading=document.getElementById('loading');
-const generateBtn=document.getElementById('generateBtn');
-const canvas=document.getElementById('previewCanvas');
-const ctx=canvas.getContext('2d');
-async function generatePreview(){if(photosArray.length===0)return;const firstName=document.getElementById('firstName').value;const lastName=document.getElementById('lastName').value;const phone=document.getElementById('phone').value;const social=document.getElementById('social').value;const info=document.getElementById('info').value;const theme=document.getElementById('theme').value;const textSize=parseInt(document.getElementById('textSize').value);const overlayOpacity=parseInt(document.getElementById('overlayOpacity').value);const textColor=document.getElementById('textColor').value;const borderColor=document.getElementById('borderColor').value;const borderWidth=parseInt(document.getElementById('borderWidth').value);const quality=parseInt(document.getElementById('imageQuality').value)/100;const idPosition=document.getElementById('idPosition').value;const[width,height]=document.getElementById('outputSize').value.split('x').map(Number);canvas.width=width;canvas.height=height;ctx.clearRect(0,0,width,height);const numPhotos=photosArray.length;let cols,rows;if(numPhotos<=2){cols=numPhotos;rows=1;}else if(numPhotos<=4){cols=2;rows=2;}else{cols=3;rows=2;}const imgW=width/cols;const imgH=height/rows;photosArray.forEach((img,i)=>{const col=i%cols;const row=Math.floor(i/cols);const x=col*imgW;const y=row*imgH;const scale=Math.max(imgW/img.width,imgH/img.height);const scaledW=img.width*scale;const scaledH=img.height*scale;const offsetX=x+(imgW-scaledW)/2;const offsetY=y+(imgH-scaledH)/2;ctx.drawImage(img,offsetX,offsetY,scaledW,scaledH);});if(idCardImage){const idW=width/4;const idH=idW*(idCardImage.height/idCardImage.width);const pos=getIdCardPosition(width,height,idW,idH,idPosition);ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(pos.x-5,pos.y-5,idW+10,idH+10);ctx.drawImage(idCardImage,pos.x,pos.y,idW,idH);ctx.strokeStyle=borderColor;ctx.lineWidth=3;ctx.strokeRect(pos.x,pos.y,idW,idH);}drawOverlay(ctx,width,height,theme,overlayOpacity);const textLines=[firstName&&lastName?`${firstName} ${lastName}`:'',phone?`📞 ${phone}`:'',social?`📱 ${social}`:'',info].filter(Boolean);const finalText=textLines.join('\n');if(finalText.trim()){ctx.font=`bold ${textSize}px Impact, Arial Black, sans-serif`;const padding=20;const lineHeight=textSize*1.3;const textHeight=textLines.length*lineHeight+padding*2;ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(0,0,width,textHeight);ctx.fillStyle=textColor;ctx.strokeStyle='#000';ctx.lineWidth=Math.max(2,textSize/20);ctx.textAlign='left';ctx.textBaseline='top';wrapText(ctx,finalText,padding,padding,width-padding*2,lineHeight);}if(borderWidth>0){ctx.strokeStyle=borderColor;ctx.lineWidth=borderWidth;ctx.strokeRect(borderWidth/2,borderWidth/2,width-borderWidth,height-borderWidth);}const dataURL=canvas.toDataURL('image/jpeg',quality);preview.src=dataURL;preview.style.display='block';downloadLink.href=dataURL;downloadLink.download=`${firstName}_${lastName}_${Date.now()}.jpg`.replace(/\s+/g,'_');downloadLink.style.display='inline-block';}
-form.addEventListener('submit',async e=>{e.preventDefault();if(photosArray.length===0){alert('⚠️ Veuillez sélectionner au moins une image.');return;}loading.style.display='block';generateBtn.disabled=true;preview.style.display='none';downloadLink.style.display='none';await generatePreview();loading.style.display='none';generateBtn.disabled=false;});
-['textSize','overlayOpacity','imageQuality','borderWidth','textColor','borderColor','theme','idPosition','outputSize'].forEach(id=>{const elem=document.getElementById(id);if(elem){elem.addEventListener('change',()=>{if(document.getElementById('livePreview').checked&&photosArray.length>0){generatePreview();}});}});
-['firstName','lastName','phone','social','info'].forEach(id=>{document.getElementById(id).addEventListener('input',()=>{if(document.getElementById('livePreview').checked&&photosArray.length>0){clearTimeout(window.previewTimeout);window.previewTimeout=setTimeout(generatePreview,500);}});});
-document.getElementById('translateBtn').addEventListener('click',()=>{const fields=['firstName','lastName','info'];fields.forEach(id=>{const elem=document.getElementById(id);if(elem.value&&!elem.value.startsWith('[EN]')){elem.value=`[EN] ${elem.value}`;}});});
-document.getElementById('resetBtn').addEventListener('click',()=>{if(confirm('🔄 Voulez-vous vraiment réinitialiser tous les champs ?')){form.reset();photosArray=[];idCardImage=null;photoPreview.innerHTML='';idPreview.innerHTML='';preview.style.display='none';downloadLink.style.display='none';Object.entries(sliders).forEach(([key,{elem,display,suffix}])=>{display.textContent=elem.value+suffix;});}});
+    const form = document.getElementById('twForm');
+    const showCni = document.getElementById('showCni');
+    const cniContainer = document.getElementById('cniContainer');
+    const canvas = document.getElementById('canvasPreview');
+    const ctx = canvas.getContext('2d');
+    const loader = document.getElementById('loader');
+    const btnTest = document.getElementById('btnTest');
+
+    showCni.onchange = () => cniContainer.classList.toggle('active', showCni.checked);
+
+    function toggleBadge(el) {
+        el.classList.toggle('selected');
+    }
+
+    function loadImage(file) {
+        return new Promise((res) => {
+            if (!file) { res(null); return; }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => res(img);
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function loadImageFromUrl(url) {
+        return new Promise((res) => {
+            const img = new Image();
+            img.crossOrigin = "anonymous";
+            img.onload = () => res(img);
+            img.src = url;
+        });
+    }
+
+    function drawAdaptiveText(ctx, text, centerX, startY, maxWidth) {
+        text = text.toUpperCase();
+        let fontSize = canvas.width * 0.08;
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#fff';
+        ctx.shadowColor = 'rgba(0,0,0,0.9)';
+        ctx.shadowBlur = 15;
+
+        let lines = [];
+        
+        while (fontSize > 20) {
+            ctx.font = `bold ${fontSize}px Impact, sans-serif`;
+            lines = [];
+            let words = text.split(' ');
+            let currentLine = words[0];
+
+            for (let i = 1; i < words.length; i++) {
+                let testLine = currentLine + " " + words[i];
+                if (ctx.measureText(testLine).width > maxWidth) {
+                    lines.push(currentLine);
+                    currentLine = words[i];
+                } else {
+                    currentLine = testLine;
+                }
+            }
+            lines.push(currentLine);
+
+            if (lines.length > 4 && fontSize > 30) {
+                fontSize -= 5;
+            } else {
+                break;
+            }
+        }
+
+        const lineHeight = fontSize * 1.1;
+        lines.forEach((line, index) => {
+            ctx.fillText(line, centerX, startY + (index * lineHeight));
+        });
+        
+        return startY + (lines.length * lineHeight);
+    }
+
+    async function processGeneration(isTest = false) {
+        loader.style.display = 'block';
+        const downloadLink = document.getElementById('downloadLink');
+        downloadLink.style.display = 'none';
+        canvas.style.display = 'none';
+
+        try {
+            let mainImg, cniImg;
+
+            if (isTest) {
+                mainImg = await loadImageFromUrl('https://picsum.photos/1200/800?grayscale');
+                // Dans le test, on ne charge la CNI que si la case est cochée
+                if (showCni.checked) {
+                    cniImg = await loadImageFromUrl('https://placehold.co/600x400/222/cc0000?text=SCAN+CNI+TEST');
+                }
+            } else {
+                const mainImgFile = document.getElementById('mainImg').files[0];
+                if (!mainImgFile) {
+                    alert("Veuillez d'abord sélectionner une image principale !");
+                    loader.style.display = 'none';
+                    return;
+                }
+                mainImg = await loadImage(mainImgFile);
+                if (showCni.checked) {
+                    const cniImgFile = document.getElementById('cniFile').files[0];
+                    if (cniImgFile) {
+                        cniImg = await loadImage(cniImgFile);
+                    }
+                }
+            }
+
+            const scale = 1200 / mainImg.width;
+            canvas.width = 1200;
+            canvas.height = mainImg.height * scale;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(mainImg, 0, 0, canvas.width, canvas.height);
+
+            const filtre = document.getElementById('styleFiltre').value;
+            if (filtre === 'dark') {
+                ctx.globalCompositeOperation = 'luminosity';
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0,0, canvas.width, canvas.height);
+                ctx.globalCompositeOperation = 'source-over';
+            } else if (filtre === 'red') {
+                ctx.fillStyle = 'rgba(255, 0, 0, 0.25)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            } else if (filtre === 'industrial') {
+                for(let i=0; i<5000; i++) {
+                    ctx.fillStyle = `rgba(255,255,255,${Math.random()*0.05})`;
+                    ctx.fillRect(Math.random()*canvas.width, Math.random()*canvas.height, 2, 2);
+                }
+            }
+
+            const frameCol = document.getElementById('frameColor').value;
+            ctx.strokeStyle = frameCol;
+            ctx.lineWidth = canvas.width * 0.02;
+            ctx.strokeRect(0, 0, canvas.width, canvas.height);
+
+            const message = document.getElementById('mainText').value || (isTest ? "EXPOSITION PUBLIQUE : CETTE CHOSE EST MA PROPRIÉTÉ" : "");
+            const endY = drawAdaptiveText(ctx, message, canvas.width/2, canvas.height * 0.12, canvas.width * 0.85);
+
+            const badges = Array.from(document.querySelectorAll('.badge-opt.selected')).map(b => b.dataset.tag).join(' ');
+            ctx.font = `italic ${canvas.width * 0.025}px Arial`;
+            ctx.fillStyle = frameCol;
+            ctx.fillText(badges, canvas.width/2, endY + 10);
+
+            const handle = document.getElementById('twHandle').value || (isTest ? "@soumis_anonyme" : "");
+            if (handle) {
+                ctx.font = `bold ${canvas.width * 0.035}px Arial`;
+                ctx.fillStyle = '#fff';
+                ctx.fillText(handle, canvas.width/2, canvas.height - 60);
+            }
+
+            if (showCni.checked && cniImg) {
+                const cniW = parseInt(document.getElementById('cniSize').value);
+                const cniH = cniW * (cniImg.height / cniImg.width);
+                const pos = document.getElementById('cniPos').value;
+                const censure = document.getElementById('cniCensure').value;
+                const pad = 50;
+
+                let cx, cy;
+                if(pos === 'br') { cx = canvas.width - cniW - pad; cy = canvas.height - cniH - pad; }
+                else if(pos === 'bl') { cx = pad; cy = canvas.height - cniH - pad; }
+                else { cx = (canvas.width - cniW)/2; cy = (canvas.height - cniH)/2; }
+
+                ctx.shadowColor = 'black';
+                ctx.shadowBlur = 30;
+                ctx.drawImage(cniImg, cx, cy, cniW, cniH);
+                
+                if (censure !== 'none') {
+                    ctx.shadowBlur = 0;
+                    if (censure === 'black-bar') {
+                        ctx.fillStyle = '#000';
+                        ctx.fillRect(cx + (cniW * 0.05), cy + (cniH * 0.75), cniW * 0.9, cniH * 0.2);
+                    } else if (censure === 'pixel') {
+                        ctx.fillStyle = 'rgba(0,0,0,0.95)';
+                        ctx.fillRect(cx, cy + (cniH * 0.6), cniW, cniH * 0.4);
+                    }
+                }
+                ctx.strokeStyle = frameCol;
+                ctx.lineWidth = 4;
+                ctx.strokeRect(cx, cy, cniW, cniH);
+            }
+
+            canvas.style.display = 'inline-block';
+            downloadLink.href = canvas.toDataURL('image/jpeg', 0.95);
+            downloadLink.style.display = 'inline-block';
+
+        } catch (err) {
+            console.error(err);
+            alert("Erreur : " + err.message);
+        } finally {
+            loader.style.display = 'none';
+        }
+    }
+
+    btnTest.onclick = () => {
+        // On ne force plus showCni.checked = true;
+        // Cela permet de tester avec ou sans CNI selon l'état actuel de la case
+        document.getElementById('twHandle').value = "@soumis_test";
+        document.getElementById('mainText').value = "Je m'expose publiquement sur Twitter. Je ne suis plus qu'un objet destiné au plaisir de mon Maître. Ceci est une preuve de ma soumission totale.";
+        
+        document.querySelectorAll('.badge-opt').forEach((b, i) => { if(i < 3) b.classList.add('selected'); });
+        
+        processGeneration(true);
+    };
+
+    form.onsubmit = (e) => {
+        e.preventDefault();
+        processGeneration(false);
+    };
 </script>
+
 </body>
 </html>
+
