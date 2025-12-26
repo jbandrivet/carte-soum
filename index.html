@@ -27,7 +27,7 @@
             border-radius: 24px;
             box-shadow: 0 0 40px rgba(255, 0, 0, 0.2);
             padding: 30px;
-            max-width: 850px;
+            max-width: 900px;
             width: 100%;
             border: 1px solid #333;
         }
@@ -63,7 +63,7 @@
             text-transform: uppercase;
         }
 
-        input[type="text"], input[type="file"], textarea, select {
+        input[type="text"], input[type="email"], input[type="tel"], input[type="file"], textarea, select {
             width: 100%;
             padding: 12px;
             background: #000;
@@ -183,9 +183,16 @@
 
         #downloadLink:hover { background: rgba(255,0,0,0.1); }
 
+        .contact-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
         @media (max-width: 768px) { 
             .grid { grid-template-columns: 1fr; }
             .button-group { grid-template-columns: 1fr; }
+            .contact-group { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -196,46 +203,53 @@
     
     <form id="twForm">
         <div class="grid">
-            <!-- Colonne Gauche -->
+            <!-- Section Identité & Message -->
             <div class="form-section">
-                <label>📸 IMAGE PRINCIPALE</label>
+                <label>📸 Image Principale (Libre)</label>
                 <input type="file" id="mainImg" accept="image/*">
                 
-                <label>🐦 VOTRE @ TWITTER</label>
+                <label>🐦 Identifiant Twitter (@)</label>
                 <input type="text" id="twHandle" placeholder="@votre_pseudo">
                 
-                <label>✍️ MESSAGE D'EXPOSITION</label>
+                <label>✍️ Message d'Exposition</label>
                 <textarea id="mainText" rows="3" placeholder="Ex: Officiellement soumis à @Maitre_X..."></textarea>
                 
-                <label>🏷️ HASHTAGS</label>
+                <label>🏷️ Hashtags</label>
                 <div class="twitter-badges">
                     <span class="badge-opt" data-tag="#soumis" onclick="toggleBadge(this)">#soumis</span>
                     <span class="badge-opt" data-tag="#owned" onclick="toggleBadge(this)">#owned</span>
                     <span class="badge-opt" data-tag="#exposure" onclick="toggleBadge(this)">#exposure</span>
                     <span class="badge-opt" data-tag="#humiliation" onclick="toggleBadge(this)">#humiliation</span>
                 </div>
+
+                <label>📞 Coordonnées de Contact</label>
+                <div class="contact-group">
+                    <input type="email" id="contactEmail" placeholder="Email">
+                    <input type="tel" id="contactPhone" placeholder="Téléphone">
+                </div>
+                <div class="contact-group">
+                    <input type="text" id="contactFb" placeholder="Facebook">
+                    <input type="text" id="contactOther" placeholder="Telegram / Insta">
+                </div>
             </div>
 
-            <!-- Colonne Droite -->
+            <!-- Section Style & CNI -->
             <div class="form-section">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <label style="margin:0">🆔 AJOUTER SCAN CNI (Optionnel)</label>
+                    <label style="margin:0">🆔 Ajouter Scan CNI (Optionnel)</label>
                     <input type="checkbox" id="showCni" style="width:20px; height:20px; accent-color:#f00">
                 </div>
                 
                 <div id="cniContainer" class="sub-options">
                     <input type="file" id="cniFile" accept="image/*">
-                    
                     <label>Position :</label>
                     <select id="cniPos">
                         <option value="br">Bas Droite</option>
                         <option value="bl">Bas Gauche</option>
                         <option value="c">Centre</option>
                     </select>
-                    
                     <label>Taille :</label>
                     <input type="range" id="cniSize" min="200" max="600" value="380">
-                    
                     <label>Masquage Sécurité :</label>
                     <select id="cniCensure">
                         <option value="none">Aucun</option>
@@ -244,7 +258,7 @@
                     </select>
                 </div>
 
-                <label style="margin-top:15px">🎞️ STYLE VISUEL</label>
+                <label style="margin-top:15px">🎞️ Style Visuel</label>
                 <select id="styleFiltre">
                     <option value="none">Standard</option>
                     <option value="dark">Contraste Brut (N&B)</option>
@@ -252,7 +266,7 @@
                     <option value="industrial">Grain Argentique</option>
                 </select>
 
-                <label>COULEUR DU CADRE</label>
+                <label>Couleur du Cadre</label>
                 <input type="color" id="frameColor" value="#ff0000" style="height:40px; cursor:pointer;">
             </div>
         </div>
@@ -310,6 +324,7 @@
     }
 
     function drawAdaptiveText(ctx, text, centerX, startY, maxWidth) {
+        if (!text) return startY;
         text = text.toUpperCase();
         let fontSize = canvas.width * 0.08;
         ctx.textAlign = 'center';
@@ -319,7 +334,7 @@
 
         let lines = [];
         
-        while (fontSize > 20) {
+        while (fontSize > 18) {
             ctx.font = `bold ${fontSize}px Impact, sans-serif`;
             lines = [];
             let words = text.split(' ');
@@ -336,7 +351,7 @@
             }
             lines.push(currentLine);
 
-            if (lines.length > 4 && fontSize > 30) {
+            if (lines.length > 5 && fontSize > 25) {
                 fontSize -= 5;
             } else {
                 break;
@@ -362,32 +377,37 @@
 
             if (isTest) {
                 mainImg = await loadImageFromUrl('https://picsum.photos/1200/800?grayscale');
-                // Dans le test, on ne charge la CNI que si la case est cochée
                 if (showCni.checked) {
                     cniImg = await loadImageFromUrl('https://placehold.co/600x400/222/cc0000?text=SCAN+CNI+TEST');
                 }
             } else {
                 const mainImgFile = document.getElementById('mainImg').files[0];
                 if (!mainImgFile) {
-                    alert("Veuillez d'abord sélectionner une image principale !");
-                    loader.style.display = 'none';
-                    return;
+                    // Si aucune image, on crée un fond noir par défaut
+                    canvas.width = 1200;
+                    canvas.height = 800;
+                    ctx.fillStyle = "#050505";
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                } else {
+                    mainImg = await loadImage(mainImgFile);
+                    const scale = 1200 / mainImg.width;
+                    canvas.width = 1200;
+                    canvas.height = mainImg.height * scale;
+                    ctx.drawImage(mainImg, 0, 0, canvas.width, canvas.height);
                 }
-                mainImg = await loadImage(mainImgFile);
+                
                 if (showCni.checked) {
                     const cniImgFile = document.getElementById('cniFile').files[0];
-                    if (cniImgFile) {
-                        cniImg = await loadImage(cniImgFile);
-                    }
+                    if (cniImgFile) cniImg = await loadImage(cniImgFile);
                 }
             }
 
-            const scale = 1200 / mainImg.width;
-            canvas.width = 1200;
-            canvas.height = mainImg.height * scale;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(mainImg, 0, 0, canvas.width, canvas.height);
+            if (isTest && mainImg) {
+                const scale = 1200 / mainImg.width;
+                canvas.width = 1200;
+                canvas.height = mainImg.height * scale;
+                ctx.drawImage(mainImg, 0, 0, canvas.width, canvas.height);
+            }
 
             const filtre = document.getElementById('styleFiltre').value;
             if (filtre === 'dark') {
@@ -410,19 +430,51 @@
             ctx.lineWidth = canvas.width * 0.02;
             ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
-            const message = document.getElementById('mainText').value || (isTest ? "EXPOSITION PUBLIQUE : CETTE CHOSE EST MA PROPRIÉTÉ" : "");
-            const endY = drawAdaptiveText(ctx, message, canvas.width/2, canvas.height * 0.12, canvas.width * 0.85);
+            const message = document.getElementById('mainText').value;
+            let currentY = canvas.height * 0.12;
+            if (message || isTest) {
+                const textToDraw = message || (isTest ? "DRESSÉ POUR LE SERVICE - PROPRIÉTÉ EXCLUSIVE" : "");
+                currentY = drawAdaptiveText(ctx, textToDraw, canvas.width/2, currentY, canvas.width * 0.85);
+            }
 
             const badges = Array.from(document.querySelectorAll('.badge-opt.selected')).map(b => b.dataset.tag).join(' ');
-            ctx.font = `italic ${canvas.width * 0.025}px Arial`;
-            ctx.fillStyle = frameCol;
-            ctx.fillText(badges, canvas.width/2, endY + 10);
+            if (badges) {
+                ctx.font = `italic ${canvas.width * 0.025}px Arial`;
+                ctx.fillStyle = frameCol;
+                ctx.textAlign = 'center';
+                ctx.fillText(badges, canvas.width/2, currentY + 15);
+            }
 
-            const handle = document.getElementById('twHandle').value || (isTest ? "@soumis_anonyme" : "");
-            if (handle) {
-                ctx.font = `bold ${canvas.width * 0.035}px Arial`;
-                ctx.fillStyle = '#fff';
-                ctx.fillText(handle, canvas.width/2, canvas.height - 60);
+            // FOOTER - CONTACT INFOS
+            const handle = document.getElementById('twHandle').value || (isTest ? "@soumis_test" : "");
+            const email = document.getElementById('contactEmail').value;
+            const phone = document.getElementById('contactPhone').value;
+            const fb = document.getElementById('contactFb').value;
+            const other = document.getElementById('contactOther').value;
+
+            // Barre de fond pour les contacts
+            if (handle || email || phone || fb || other) {
+                ctx.fillStyle = 'rgba(0,0,0,0.6)';
+                ctx.fillRect(0, canvas.height - 140, canvas.width, 140);
+
+                ctx.textAlign = 'center';
+                if (handle) {
+                    ctx.font = `bold ${canvas.width * 0.04}px Arial`;
+                    ctx.fillStyle = '#fff';
+                    ctx.fillText(handle, canvas.width/2, canvas.height - 85);
+                }
+
+                let contactInfo = [];
+                if (email) contactInfo.push(`📧 ${email}`);
+                if (phone) contactInfo.push(`📞 ${phone}`);
+                if (fb) contactInfo.push(`👤 FB: ${fb}`);
+                if (other) contactInfo.push(`🔗 ${other}`);
+                
+                if (contactInfo.length > 0) {
+                    ctx.font = `bold ${canvas.width * 0.022}px Arial`;
+                    ctx.fillStyle = frameCol;
+                    ctx.fillText(contactInfo.join("  |  "), canvas.width/2, canvas.height - 40);
+                }
             }
 
             if (showCni.checked && cniImg) {
@@ -430,13 +482,14 @@
                 const cniH = cniW * (cniImg.height / cniImg.width);
                 const pos = document.getElementById('cniPos').value;
                 const censure = document.getElementById('cniCensure').value;
-                const pad = 50;
+                const pad = 60;
 
                 let cx, cy;
-                if(pos === 'br') { cx = canvas.width - cniW - pad; cy = canvas.height - cniH - pad; }
-                else if(pos === 'bl') { cx = pad; cy = canvas.height - cniH - pad; }
+                if(pos === 'br') { cx = canvas.width - cniW - pad; cy = canvas.height - cniH - pad - 120; }
+                else if(pos === 'bl') { cx = pad; cy = canvas.height - cniH - pad - 120; }
                 else { cx = (canvas.width - cniW)/2; cy = (canvas.height - cniH)/2; }
 
+                ctx.save();
                 ctx.shadowColor = 'black';
                 ctx.shadowBlur = 30;
                 ctx.drawImage(cniImg, cx, cy, cniW, cniH);
@@ -454,6 +507,7 @@
                 ctx.strokeStyle = frameCol;
                 ctx.lineWidth = 4;
                 ctx.strokeRect(cx, cy, cniW, cniH);
+                ctx.restore();
             }
 
             canvas.style.display = 'inline-block';
@@ -462,29 +516,24 @@
 
         } catch (err) {
             console.error(err);
-            alert("Erreur : " + err.message);
+            alert("Erreur lors de la génération.");
         } finally {
             loader.style.display = 'none';
         }
     }
 
     btnTest.onclick = () => {
-        // On ne force plus showCni.checked = true;
-        // Cela permet de tester avec ou sans CNI selon l'état actuel de la case
         document.getElementById('twHandle').value = "@soumis_test";
-        document.getElementById('mainText').value = "Je m'expose publiquement sur Twitter. Je ne suis plus qu'un objet destiné au plaisir de mon Maître. Ceci est une preuve de ma soumission totale.";
-        
-        document.querySelectorAll('.badge-opt').forEach((b, i) => { if(i < 3) b.classList.add('selected'); });
-        
+        document.getElementById('mainText').value = "Simulation d'exposition : ceci est un test de rendu dynamique sans obligation de champs.";
+        document.getElementById('contactEmail').value = "test@exemple.com";
+        document.getElementById('contactFb').value = "Jean Soumis";
+        document.getElementById('contactOther').value = "Telegram: @test_99";
+        document.querySelectorAll('.badge-opt').forEach((b, i) => { if(i < 2) b.classList.add('selected'); });
         processGeneration(true);
     };
 
-    form.onsubmit = (e) => {
-        e.preventDefault();
-        processGeneration(false);
-    };
+    form.onsubmit = (e) => { e.preventDefault(); processGeneration(false); };
 </script>
 
 </body>
 </html>
-
